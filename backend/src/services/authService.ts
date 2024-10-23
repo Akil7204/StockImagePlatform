@@ -3,12 +3,12 @@ import { hashPassword, comparePasswords } from '../utils/passwordUtils';
 import { generateJWT } from '../utils/jwtUtils';
 import crypto from 'crypto';
 
-export const registerUser = async (email: string, phone: string, password: string) => {
+export const registerUser = async (email: string, username: string, password: string) => {
     const existingUser = await findUserByEmail(email);
     if (existingUser) throw new Error('User already exists');
 
     const hashedPassword = await hashPassword(password);
-    const newUser: any = await createUser({ email, phone, password: hashedPassword });
+    const newUser: any = await createUser({ email, username, password: hashedPassword });
     return generateJWT(newUser._id);
 };
 

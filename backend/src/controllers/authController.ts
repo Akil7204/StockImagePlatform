@@ -3,8 +3,10 @@ import { registerUser, loginUser, resetPasswordRequest, resetPassword } from '..
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { email, phone, password } = req.body;
-        const token = await registerUser(email, phone, password);
+        const { email, username, password } = req.body;
+        console.log(email, username, password );
+        
+        const token = await registerUser(email, username, password);
         res.status(201).json({ token });
     } catch (error: any) {
         res.status(400).json({ error: error.message });

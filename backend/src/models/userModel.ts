@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
     email: string;
-    phone: string;
+    username: string;
     password: string;
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
@@ -10,7 +10,7 @@ export interface IUser extends Document {
 
 const userSchema: Schema<IUser> = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
+    username: { type: String, required: true },
     password: { type: String, required: true },
     resetPasswordToken: String,
     resetPasswordExpires: Date,

@@ -1,22 +1,31 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import { connectToDatabase } from "./config";
 import authRoutes from "./routes/authRoutes"
 
 dotenv.config();
-
-const app = express();
-
 connectToDatabase();
 
-app.use('/api/auth', authRoutes);
+const app = express();
+const FRONTEND_ENV = process.env.FRONTEND_ENV || "http://localhost:5173";
 
 
+app.use(
+  cors({
+    origin: FRONTEND_ENV.replace(/\/$/, ""),
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+
+
+
+app.use('/api/auth', authRoutes);
 
 
 
