@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/home", { replace: true }); 
+      navigate("/Dashboard", { replace: true }); 
     }
   }, [isAuthenticated, navigate]);
 
@@ -62,7 +62,7 @@ const Login = () => {
       toast.success("Login successful!");
 
       setTimeout(() => {
-        navigate("/home", { replace: true });
+        navigate("/Dashboard", { replace: true });
       }, 2000);
     } catch (err: any) {
       console.error("There was a problem with the fetch operation:", err);

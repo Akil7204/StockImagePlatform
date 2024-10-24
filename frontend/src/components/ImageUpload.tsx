@@ -32,20 +32,29 @@ const ImageUpload: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="file" multiple onChange={handleFilesChange} />
+    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold text-center mb-4">Upload Images</h2>
+      <input
+        type="file"
+        multiple
+        onChange={handleFilesChange}
+        className="mb-4 w-full border border-gray-300 rounded-md p-2"
+      />
       {images.map((image, index) => (
-        <div key={index}>
-          <img src={URL.createObjectURL(image)} alt={`preview ${index}`} />
+        <div key={index} className="mb-4">
+          <img src={URL.createObjectURL(image)} alt={`preview ${index}`} className="h-32 w-32 object-cover mb-2" />
           <input
             type="text"
             placeholder="Title"
             value={titles[index] || ''}
             onChange={(e) => handleTitleChange(index, e.target.value)}
+            className="block w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
           />
         </div>
       ))}
-      <button type="submit">Upload Images</button>
+      <button type="submit" className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600">
+        Upload Images
+      </button>
     </form>
   );
 };
