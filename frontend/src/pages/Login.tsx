@@ -42,6 +42,8 @@ const Login = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
+        console.log(errorData);
+        
         let errorMessage = "Something went wrong!";
 
         if (res.status === 404) {
@@ -51,8 +53,10 @@ const Login = () => {
         } else if (errorData.message) {
           errorMessage = errorData.message;
         }
-
+        console.log(errorMessage);
+        
         throw new Error(errorMessage);
+
       }
 
       const data = await res.json();

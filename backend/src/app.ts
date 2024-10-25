@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectToDatabase } from "./config";
 import authRoutes from "./routes/authRoutes"
+import imageRoutes from "./routes/ImageRoutes"
 
 dotenv.config();
 connectToDatabase();
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/auth', authRoutes);
+app.use("/api/image", imageRoutes);
 
 
 

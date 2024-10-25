@@ -19,13 +19,19 @@ const ImageUpload: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
     const formData = new FormData();
     images.forEach((image, index) => {
       formData.append('images', image);
       formData.append('titles', titles[index]);
     });
     try {
-      await axios.post('/api/upload-images', formData);
+      await axios.post('/api/image/upload', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+          'Content-Type': 'multipart/form-data', 
+        },
+      });
     } catch (error) {
       console.error(error);
     }
