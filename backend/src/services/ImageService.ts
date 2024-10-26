@@ -1,3 +1,4 @@
+import { IImage } from "../models/Image";
 import { imageRepository } from "../repositories/ImageRepository";
 
 export const imageService = (imageRepo: typeof imageRepository) => ({
@@ -24,5 +25,8 @@ export const imageService = (imageRepo: typeof imageRepository) => ({
 
   rearrangeImages: async (images: any[]) => {
     await imageRepo.updateImageOrder(images);
+  },
+  reorderImages: async (images: IImage[]): Promise<void> => {
+    await imageRepo.updateImagesOrder(images);
   },
 });

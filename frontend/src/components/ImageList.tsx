@@ -59,7 +59,6 @@ const ImageList: React.FC = () => {
     }
   }, [images]);
 
-  // Handle delete operation
   const handleDelete = useCallback(
     async (id: string) => {
       try {
@@ -72,7 +71,6 @@ const ImageList: React.FC = () => {
     [fetchImages]
   );
 
-  // Handle edit title operation
   const handleEditTitle = useCallback(
     async (id: string, newTitle: string) => {
       try {
@@ -85,7 +83,6 @@ const ImageList: React.FC = () => {
     [fetchImages]
   );
 
-  // Check for empty state
   if (images.length === 0) {
     return <p>Loading images...</p>;
   }
@@ -93,9 +90,9 @@ const ImageList: React.FC = () => {
   return (
     <div
       className="grid grid-cols-5 gap-4"
-      ref={sortableContainerRef} // Attach the ref here
+      ref={sortableContainerRef} 
     >
-      {images.map((image, index) => (
+      {images.map((image) => (
         <div
           key={image._id}
           className="bg-gray-100 p-4 rounded-md shadow-md aspect-[3/4] flex flex-col items-center"

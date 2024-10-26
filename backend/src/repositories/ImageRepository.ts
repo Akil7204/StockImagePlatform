@@ -21,4 +21,14 @@ export const imageRepository = {
       await Image.findByIdAndUpdate(image._id, { order: image.order }).exec();
     }
   },
+  updateImagesOrder: async (images: IImage[]): Promise<void> => {
+    const bulkOps = images.map((image) => ({
+      updateOne: {
+        filter: { _id: image._id },
+        update: { $set: { order: image.order } },
+      },
+    }));
+    
+    await Image.bulkWrite(bulkOps);
+  },
 };
