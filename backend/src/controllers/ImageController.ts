@@ -61,3 +61,15 @@ export const rearrangeImages = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Rearranging images failed" });
   }
 };
+
+export const editImageTitle = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { title } = req.body;
+  try {
+    await imageSvc.updateImageTitle(id, title);
+    res.status(200).json({ message: "Image title updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update image title" });
+  }
+};
+

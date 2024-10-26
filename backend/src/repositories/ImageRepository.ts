@@ -31,4 +31,7 @@ export const imageRepository = {
     
     await Image.bulkWrite(bulkOps);
   },
+  editImageTitleById: async (id: string, newTitle: string): Promise<void> => {
+    await Image.findByIdAndUpdate(id, { title: newTitle }, { new: true });
+  },
 };

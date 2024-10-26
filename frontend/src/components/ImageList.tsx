@@ -73,14 +73,22 @@ const ImageList: React.FC = () => {
 
   const handleEditTitle = useCallback(
     async (id: string, newTitle: string) => {
+      const token = localStorage.getItem("token");
       try {
-        await axios.put(`/api/image/edit-image/${id}`, { title: newTitle });
-        fetchImages();
+        await axios.put(`/api/image/edit-image/${id}`, { title: newTitle }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setImages((prevImages) =>
+          prevImages.map((image) =>
+            image._id === id ? { ...image, title: newTitle } : image
+          )
+        );
+        // fetchImages();
       } catch (error) {
         console.error("Failed to edit image title:", error);
       }
     },
-    [fetchImages]
+    []
   );
 
   if (images.length === 0) {

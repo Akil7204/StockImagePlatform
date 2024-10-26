@@ -29,4 +29,7 @@ export const imageService = (imageRepo: typeof imageRepository) => ({
   reorderImages: async (images: IImage[]): Promise<void> => {
     await imageRepo.updateImagesOrder(images);
   },
+  updateImageTitle: async (id: string, newTitle: string): Promise<void> => {
+    await imageRepo.editImageTitleById(id, newTitle);
+  },
 });
