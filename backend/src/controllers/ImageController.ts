@@ -9,7 +9,6 @@ export const uploadImages = async (req: any, res: Response) => {
     const userId = req.userId;
     const images = req.files as Express.Multer.File[];
     const { titles } = req.body;
-    console.log(images, userId, titles);
     
     const uploadedImages = await imageSvc.uploadImages(images, userId, titles);
     

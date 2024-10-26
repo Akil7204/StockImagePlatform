@@ -1,75 +1,126 @@
-import React, { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import axios from '../services/api';
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import Sortable from "sortablejs"; // Import SortableJS
+import axios from "../services/api";
 
 interface Image {
   _id: string;
   title: string;
-  url: string;
+  imageUrl: string;
+  order: number;
 }
 
 const ImageList: React.FC = () => {
   const [images, setImages] = useState<Image[]>([]);
+  const sortableContainerRef = useRef<HTMLDivElement>(null);
 
-  const fetchImages = async () => {
-    const response = await axios.get('/api/get-images');
-    setImages(response.data);
-  };
+  const fetchImages = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get("/api/image/getImage", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const sortedImages = response.data.sort((a: Image, b: Image) => a.order - b.order);
+      setImages(sortedImages);
+    } catch (error) {
+      console.error("Failed to fetch images:", error);
+    }
+  }, []);
 
-  const handleDelete = async (id: string) => {
-    await axios.delete(`/api/delete-image/${id}`);
+  useEffect(() => {
     fetchImages();
-  };
+  }, [fetchImages]);
 
-  const handleEdit = async (id: string, newTitle: string) => {
-    await axios.put(`/api/edit-image/${id}`, { title: newTitle });
-    fetchImages();
-  };
+  useEffect(() => {
+    if (sortableContainerRef.current) {
+      Sortable.create(sortableContainerRef.current, {
+        animation: 150,
+        onEnd: async (event) => {
+          const newImages = Array.from(images);
+          const [removed] = newImages.splice(event.oldIndex!, 1);
+          newImages.splice(event.newIndex!, 0, removed);
 
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    const reorderedImages = Array.from(images);
-    const [removed] = reorderedImages.splice(result.source.index, 1);
-    reorderedImages.splice(result.destination.index, 0, removed);
-    setImages(reorderedImages);
-  };
+          const updatedImages = newImages.map((image, index) => ({
+            ...image,
+            order: index,
+          }));
+
+          setImages(updatedImages);
+
+          const token = localStorage.getItem("token");
+          try {
+            await axios.put("/api/image/updateOrder", updatedImages, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          } catch (error) {
+            console.error("Failed to update image order:", error);
+          }
+        },
+      });
+    }
+  }, [images]);
+
+  // Handle delete operation
+  const handleDelete = useCallback(
+    async (id: string) => {
+      try {
+        await axios.delete(`/api/image/delete-image/${id}`);
+        fetchImages();
+      } catch (error) {
+        console.error("Failed to delete image:", error);
+      }
+    },
+    [fetchImages]
+  );
+
+  // Handle edit title operation
+  const handleEditTitle = useCallback(
+    async (id: string, newTitle: string) => {
+      try {
+        await axios.put(`/api/image/edit-image/${id}`, { title: newTitle });
+        fetchImages();
+      } catch (error) {
+        console.error("Failed to edit image title:", error);
+      }
+    },
+    [fetchImages]
+  );
+
+  // Check for empty state
+  if (images.length === 0) {
+    return <p>Loading images...</p>;
+  }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="image-list">
-        {(provided) => (
-          <div className="grid grid-cols-2 gap-4" {...provided.droppableProps} ref={provided.innerRef}>
-            {images.map((image, index) => (
-              <Draggable key={image._id} draggableId={image._id} index={index}>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    className="bg-gray-100 p-4 rounded-md shadow-md"
-                  >
-                    <img src={image.url} alt={image.title} className="h-32 w-32 object-cover mb-2" />
-                    <input
-                      type="text"
-                      value={image.title}
-                      onChange={(e) => handleEdit(image._id, e.target.value)}
-                      className="block w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                    />
-                    <button
-                      onClick={() => handleDelete(image._id)}
-                      className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </Draggable>
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div
+      className="grid grid-cols-5 gap-4"
+      ref={sortableContainerRef} // Attach the ref here
+    >
+      {images.map((image, index) => (
+        <div
+          key={image._id}
+          className="bg-gray-100 p-4 rounded-md shadow-md aspect-[3/4] flex flex-col items-center"
+          data-id={image._id}
+        >
+          <img
+            src={`http://localhost:4000${image.imageUrl}`}
+            alt={image.title}
+            className="h-3/4 w-full object-cover mb-2 rounded-md"
+          />
+          <input
+            type="text"
+            value={image.title}
+            onChange={(e) => handleEditTitle(image._id, e.target.value)}
+            className="w-full px-4 py-1 mb-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
+          />
+          <button
+            onClick={() => handleDelete(image._id)}
+            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
+      ))}
+    </div>
   );
 };
 

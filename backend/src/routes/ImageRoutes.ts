@@ -7,7 +7,7 @@ const router = express.Router();
 const upload = multer({ dest: "uploads/" });
 
 router.post("/upload", authMiddleware, upload.array("images"), uploadImages);
-router.get("/", authMiddleware, getImages);
+router.get("/getImage", authMiddleware, getImages);
 router.delete("/:id", authMiddleware, deleteImage);
 router.put("/rearrange", authMiddleware, rearrangeImages);
 
