@@ -9,6 +9,19 @@ dotenv.config();
 connectToDatabase();
 
 const app = express();
+// const FRONTEND_ORIGINS = [
+//   "https://stock-image-platform-two.vercel.app",
+//   "https://stock-image-platform-jeoi.vercel.app"
+// ];
+
+// app.use(
+//   cors({
+//     origin: FRONTEND_ORIGINS,
+//     credentials: true,
+//   })
+// );
+
+
 const FRONTEND_ORIGINS = [
   "https://stock-image-platform-two.vercel.app",
   "https://stock-image-platform-jeoi.vercel.app"
@@ -16,10 +29,20 @@ const FRONTEND_ORIGINS = [
 
 app.use(
   cors({
-    origin: FRONTEND_ORIGINS,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (FRONTEND_ORIGINS.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
