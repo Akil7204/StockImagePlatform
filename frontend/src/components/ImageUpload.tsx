@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from '../services/api';
 
 const ImageUpload: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
   const [titles, setTitles] = useState<string[]>([]);
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -28,10 +30,11 @@ const ImageUpload: React.FC = () => {
     try {
       await axios.post('/api/image/upload', formData, {
         headers: {
-          'Authorization': `Bearer ${token}`, 
-          'Content-Type': 'multipart/form-data', 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
+      navigate('/dashboard'); // Redirect to dashboard after successful upload
     } catch (error) {
       console.error(error);
     }

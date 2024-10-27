@@ -105,3 +105,14 @@ export const editImageTitle = async (req: Request, res: Response): Promise<void>
   }
 };
 
+export const editImage = async (req: Request, res: Response) => {
+  const { title } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+  try {
+    const updatedImage = await imageSvc.updateImageEdit(req.params.id, title, imageUrl);
+    res.json(updatedImage);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update image" });
+  }
+}
+

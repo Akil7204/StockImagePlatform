@@ -37,4 +37,8 @@ export const imageService = (imageRepo: typeof imageRepository) => ({
   updateImageTitle: async (id: string, newTitle: string): Promise<void> => {
     await imageRepo.editImageTitleById(id, newTitle);
   },
+  updateImageEdit: async (id: string, newTitle: string, url?: string): Promise<void> => {
+    await imageRepo.updateImage(id, newTitle, url);
+  },
+  
 });

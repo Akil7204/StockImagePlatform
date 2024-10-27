@@ -38,4 +38,9 @@ export const imageRepository = {
   editImageTitleById: async (id: string, newTitle: string): Promise<void> => {
     await Image.findByIdAndUpdate(id, { title: newTitle }, { new: true });
   },
+  updateImage: async (id: string, title: string, imageUrl?: string): Promise<void> => {
+    const updatedData: any = { title };
+    if (imageUrl) updatedData.imageUrl = imageUrl;
+    await Image.findByIdAndUpdate(id, updatedData, { new: true });
+  },
 };
