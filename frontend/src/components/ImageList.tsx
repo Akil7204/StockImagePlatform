@@ -62,7 +62,9 @@ const ImageList: React.FC = () => {
   const handleDelete = useCallback(
     async (id: string) => {
       try {
-        await axios.delete(`/api/image/delete-image/${id}`);
+        const response = await axios.delete(`/api/image/delete-image/${id}`);
+        console.log({response});
+        
         fetchImages();
       } catch (error) {
         console.error("Failed to delete image:", error);

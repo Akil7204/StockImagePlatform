@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { imageService } from "../services/ImageService";
 import { imageRepository } from "../repositories/ImageRepository";
+import path from "path";
+import fs from 'fs/promises';
 
 const imageSvc = imageService(imageRepository);
 
@@ -28,13 +30,44 @@ export const getImages = async (req: any, res: Response) => {
   }
 };
 
-export const deleteImage = async (req: Request, res: Response) => {
+// export const deleteImage = async (req: Request, res: Response) => {
+//   try {
+//     const { id } = req.params;
+//     await imageSvc.deleteImage(id);
+//     res.status(200).json({ message: "Image deleted" });
+//   } catch (error) {
+//     res.status(500).json({ error: "Image deletion failed" });
+//   }
+// };
+
+export const deleteImage = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-    await imageSvc.deleteImage(id);
-    res.status(200).json({ message: "Image deleted" });
+    const image: any = await imageSvc.getImageDoc(id); 
+
+    if (!image) {
+      res.status(404).json({ message: "Image not found" });
+      return;
+    }
+
+    const imagePath = path.join(__dirname, '../../', image.imageUrl); 
+    console.log(imagePath);
+    
+    try {
+      await fs.unlink(imagePath); 
+    } catch (err) {
+      console.error('Failed to delete the image file:', err);
+      res.status(500).json({ message: "Failed to delete the image file" });
+      return;
+    }
+    
+    await imageSvc.deleteImage(id); 
+    res.status(200).json({ message: "Image and file deleted successfully" });
+
   } catch (error) {
-    res.status(500).json({ error: "Image deletion failed" });
+    console.error('Error deleting image:', error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

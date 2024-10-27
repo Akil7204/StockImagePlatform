@@ -12,8 +12,12 @@ export const imageRepository = {
     return Image.find({ userId }).sort({ order: 1 }).lean<IImage[]>().exec(); 
   },
 
+  findImagesById: async (Id: string): Promise<IImage[] | null> => {
+    return await Image.findById(Id);
+  },
+
   removeImage: async (imageId: string): Promise<void> => {
-    await Image.findByIdAndDelete(imageId).exec();
+    await Image.findByIdAndDelete(imageId);
   },
 
   updateImageOrder: async (images: IImage[]): Promise<void> => {
