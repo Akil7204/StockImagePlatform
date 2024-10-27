@@ -51,8 +51,7 @@ export const deleteImage = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    const imagePath = path.join(__dirname, '../../', image.imageUrl); 
-    console.log(imagePath);
+    const imagePath = path.join(__dirname, '../../', image.imageUrl);
     
     try {
       await fs.unlink(imagePath); 
