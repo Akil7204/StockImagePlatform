@@ -9,7 +9,7 @@ dotenv.config();
 connectToDatabase();
 
 const app = express();
-const FRONTEND_ENV = process.env.FRONTEND_ENV || "https://stock-image-platform-two.vercel.app";
+const FRONTEND_ENV = process.env.FRONTEND_ENV || "https://stock-image-platform-two.vercel.app" || 'https://stock-image-platform-jeoi.vercel.app';
 
 app.use(
   cors({
