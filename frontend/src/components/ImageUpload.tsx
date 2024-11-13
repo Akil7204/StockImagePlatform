@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import axios from '../services/api';
 
 const ImageUpload: React.FC = () => {
   const [images, setImages] = useState<File[]>([]);
   const [titles, setTitles] = useState<string[]>([]);
-  const navigate = useNavigate(); // Initialize navigate
+  const [error, setError] = useState<string>('');
+  const navigate = useNavigate(); 
 
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files));
+      const selectedFiles = Array.from(e.target.files);
+      const validImages = selectedFiles.filter(file => file.type.startsWith('image/'));
+
+      if (validImages.length !== selectedFiles.length) {
+        setError('Only image files (e.g., JPG, PNG) are allowed.');
+      } else {
+        setError('');
+      }
+      
+      setImages(validImages);
     }
   };
 
@@ -21,12 +31,18 @@ const ImageUpload: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (images.length === 0) {
+      setError('Please select at least one image to upload.');
+      return;
+    }
+
     const token = localStorage.getItem('token');
     const formData = new FormData();
     images.forEach((image, index) => {
       formData.append('images', image);
-      formData.append('titles', titles[index]);
+      formData.append('titles', titles[index] || '');
     });
+
     try {
       await axios.post('/api/image/upload', formData, {
         headers: {
@@ -34,7 +50,7 @@ const ImageUpload: React.FC = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      navigate('/dashboard'); // Redirect to dashboard after successful upload
+      navigate('/dashboard'); 
     } catch (error) {
       console.error(error);
     }
@@ -43,9 +59,11 @@ const ImageUpload: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-semibold text-center mb-4">Upload Images</h2>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
       <input
         type="file"
         multiple
+        accept="image/*"
         onChange={handleFilesChange}
         className="mb-4 w-full border border-gray-300 rounded-md p-2"
       />
