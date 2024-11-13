@@ -17,6 +17,7 @@ const ImageList: React.FC = () => {
   const [editFile, setEditFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const sortableContainerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<any>(null);
 
   const fetchImages = useCallback(async () => {
     const token = localStorage.getItem("token");
@@ -79,6 +80,7 @@ const ImageList: React.FC = () => {
   const openEditModal = (image: Image) => {
     setCurrentImage(image);
     setEditTitle(image.title);
+    setError(null)
     setEditFile(null);
     setPreviewUrl(null);
     setIsModalOpen(true);
@@ -90,7 +92,8 @@ const ImageList: React.FC = () => {
       setEditFile(file);
       setPreviewUrl(URL.createObjectURL(file)); 
     } else {
-      alert("Please select a valid image file.");
+      setError("Please select a valid image file.");
+      
     }
   };
 
@@ -187,8 +190,10 @@ const ImageList: React.FC = () => {
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
               placeholder="Enter new title"
             />
+            {error && <p className="text-red-500 mb-4">{error}</p>}
             <input
               type="file"
+              accept="image/*"
               onChange={handleFileChange}
               className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none"
             />
