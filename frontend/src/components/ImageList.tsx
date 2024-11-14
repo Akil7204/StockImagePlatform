@@ -93,7 +93,6 @@ const ImageList: React.FC = () => {
       setPreviewUrl(URL.createObjectURL(file)); 
     } else {
       setError("Please select a valid image file.");
-      
     }
   };
 
